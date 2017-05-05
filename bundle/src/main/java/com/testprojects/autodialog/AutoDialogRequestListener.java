@@ -19,7 +19,7 @@ public class AutoDialogRequestListener implements SlingRequestListener {
 	static final String SERVICE_NAME = "org.apache.sling.api.request.SlingRequestListener";
 
 	public void onEvent(SlingRequestEvent objEvent) {
-		switch(objEvent.getType()){
+		/*switch(objEvent.getType()){
 		case EVENT_INIT:
 			logger.error("joel event listener init");
 			break;
@@ -35,6 +35,7 @@ public class AutoDialogRequestListener implements SlingRequestListener {
 		
 		Object objStoredResource = objEvent.getServletContext().getAttribute("resource");
 		logger.error("resource attr is null: " + (objStoredResource == null));
+		*/
 	}
 	
 	private void checkRequest(ServletRequest objRequest)

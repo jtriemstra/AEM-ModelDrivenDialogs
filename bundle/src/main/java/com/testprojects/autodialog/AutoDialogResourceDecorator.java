@@ -8,6 +8,8 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceDecorator;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 //import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +26,25 @@ public class AutoDialogResourceDecorator implements ResourceDecorator {
 		
 		if (objResourceInput != null)
 		{
-			logger.error(objResourceInput.getPath() + " " + objResourceInput.getResourceType());			
+						
 		}
 
 		if (this.accepts(objResourceInput))
 		{
-			//TODO: this class shouldn't know about the packages using it
-//			Reflections reflections = new Reflections("com.testprojects.autodialog.example");
-//			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(com.testprojects.autodialog.annotations.AutoDialog.class);
+			logger.error(objResourceInput.getPath() + " " + objResourceInput.getResourceType());
+			
+			Resource objItemsRoot = objResourceInput.getChild("content/items/tab1/items/columns/items");
+			ResourceResolver objResolver = objItemsRoot.getResourceResolver();
+			
+			/*objResolver.create(objItemsRoot, "injectedText", null);
+			
+			ValueMap objMap = objItemsRoot.adaptTo(ValueMap.class);
+			for(Object objKey : objMap.keySet())
+			{
+				logger.error("Key is " + objKey.toString());
+				logger.error("Value is " + objMap.get(objKey).toString());
+			}*/
+			
 		}
 		
 	    return objResourceInput;
@@ -48,7 +61,8 @@ public class AutoDialogResourceDecorator implements ResourceDecorator {
 		// Note: If you are checking if a resource should be decorated based on resource type,
         // Using ResourceUtil.isA(..) will send this into an infinite recursive lookup loop
 		// Joel is finding this appears to be true of objResourceInput.isResourceType() as well
-		if ("cq/gui/components/authoring/dialog".equals(objResourceInput.getResourceType()))
+		if ("cq/gui/components/authoring/dialog".equals(objResourceInput.getResourceType())
+				&& "/apps/autodialog".equals(objResourceInput.getPath().substring(0, 16)))
 		{
 			return true;
 		}
