@@ -1,7 +1,10 @@
 package com.testprojects.autodialog;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.Node;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.felix.scr.annotations.Component;
@@ -20,34 +23,22 @@ import org.slf4j.LoggerFactory;
 public class AutoDialogResourceDecorator implements ResourceDecorator {
 
 	private Logger logger = LoggerFactory.getLogger(AutoDialogResourceDecorator.class);
+	private static final String TOUCH_DIALOG_TYPE = "cq/gui/components/authoring/dialog";
 	
 	@Override
 	public Resource decorate(final Resource objResourceInput) {
 		
-		if (objResourceInput != null)
-		{
-						
-		}
-
 		if (this.accepts(objResourceInput))
 		{
-			logger.error(objResourceInput.getPath() + " " + objResourceInput.getResourceType());
-			
-			Resource objItemsRoot = objResourceInput.getChild("content/items/tab1/items/columns/items");
-			ResourceResolver objResolver = objItemsRoot.getResourceResolver();
-			
-			/*objResolver.create(objItemsRoot, "injectedText", null);
-			
-			ValueMap objMap = objItemsRoot.adaptTo(ValueMap.class);
-			for(Object objKey : objMap.keySet())
+			Class objComponentModelClass = AutoDialogModelFinder.getClass(objResourceInput.getPath());
+			if (objComponentModelClass != null)
 			{
-				logger.error("Key is " + objKey.toString());
-				logger.error("Value is " + objMap.get(objKey).toString());
-			}*/
-			
+				AutoDialogBuilder objBuilder = new AutoDialogBuilder(objComponentModelClass, objResourceInput);
+				return objBuilder.addDynamicFields();
+			}			
 		}
 		
-	    return objResourceInput;
+		return objResourceInput;
 	    
 	}
 	
@@ -61,12 +52,12 @@ public class AutoDialogResourceDecorator implements ResourceDecorator {
 		// Note: If you are checking if a resource should be decorated based on resource type,
         // Using ResourceUtil.isA(..) will send this into an infinite recursive lookup loop
 		// Joel is finding this appears to be true of objResourceInput.isResourceType() as well
-		if ("cq/gui/components/authoring/dialog".equals(objResourceInput.getResourceType())
-				&& "/apps/autodialog".equals(objResourceInput.getPath().substring(0, 16)))
+		if (TOUCH_DIALOG_TYPE.equals(objResourceInput.getResourceType()))
 		{
 			return true;
 		}
 		return false;
 	
 	}
+	
 }
