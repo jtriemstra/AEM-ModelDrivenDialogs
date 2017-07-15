@@ -4,13 +4,14 @@ import javax.inject.Inject;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.Optional;
 
 import com.testprojects.autodialog.FieldType;
 import com.testprojects.autodialog.annotations.*;
 
 //NOTE: I don't love this string, but I don't see a way around it once AutoDialogModelFinder gets fixed
 @AutoDialog(resourceType="/apps/auto-dialog/components/content/simpleComponent")
-@Model(adaptables = Resource.class)
+@Model(adaptables = Resource.class, resourceType="auto-dialog/components/content/simpleComponent")
 public class SimpleComponentModel {
 
 	@Inject	
@@ -23,9 +24,11 @@ public class SimpleComponentModel {
     private String nonAuthoredField;
     
     @Inject
+    @Optional
     private String injectedText;
     
     @Inject
+    @Optional
     @AutoDialogField(fieldResourceType=FieldType.PATH)
     private String injectedPath;
     

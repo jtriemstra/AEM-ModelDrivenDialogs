@@ -14,7 +14,7 @@
 			sling:resourceType="foundation/components/parsys">
 			<simple1
 				jcr:primaryType="nt:unstructured"
-				sling:resourceType="autodialog/components/content/simpleComponent"
+				sling:resourceType="auto-dialog/components/content/simpleComponent"
 				authoredText="this is default authored text"
 				authoredPath="/content/test-auto-dialog" />
 		</par>

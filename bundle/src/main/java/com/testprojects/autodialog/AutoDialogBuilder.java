@@ -32,6 +32,7 @@ public class AutoDialogBuilder {
 			Field[] objFields = m_objComponentModelClass.getDeclaredFields();
 			for(Field f : objFields)
 			{
+				logger.info("field: " + f.getName());
 				Map<String, Object> hshProperties = null;
 				
 				AutoDialogField objAnnotation = f.getAnnotation(com.testprojects.autodialog.annotations.AutoDialogField.class);

@@ -95,7 +95,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.test-projects.auto-dialog-bundle</Bundle-SymbolicName>
-                        
+                        <Sling-Model-Packages>
+						  com.testprojects.autodialog.example
+						</Sling-Model-Packages>
                     </instructions>
                 </configuration>
             </plugin>
