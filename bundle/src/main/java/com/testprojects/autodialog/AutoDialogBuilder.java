@@ -134,27 +134,7 @@ public class AutoDialogBuilder {
 		
 		return hshPropertyMap;
 	}
-	
-	private Map<String, Object> getDialogProperties(String strFieldName, Class objFieldClass) throws Exception
-	{
-		Map<String, Object> hshPropertyMap = new HashMap<String, Object>();
-		hshPropertyMap.put("fieldLabel", getFieldLabelByName(strFieldName));
-		hshPropertyMap.put("name", "./" + strFieldName);
-		hshPropertyMap.put("sling:resourceType", getFieldResourceType(getFieldType(objFieldClass)));
 		
-		return hshPropertyMap;
-	}
-	
-	private boolean fieldAlreadyExistsOnDialog(String strFieldName)
-	{
-		//TODO: implement real logic to find properties already on the dialog, possibly an XPath query?
-		if ("authoredText".equals(strFieldName) || "authoredPath".equals(strFieldName))
-		{
-			return true;
-		}
-		return false;
-	}
-	
 	private String getFieldLabelByName(String strFieldName)
 	{
 		//TODO: programmatically change casing and add spaces
