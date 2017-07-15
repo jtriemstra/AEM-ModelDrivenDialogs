@@ -32,26 +32,28 @@ public class AutoDialogBuilder {
 			Field[] objFields = m_objComponentModelClass.getDeclaredFields();
 			for(Field f : objFields)
 			{
-				logger.info("field: " + f.getName());
+				logger.debug("field: " + f.getName());
 				Map<String, Object> hshProperties = null;
+				String strFieldName = "";
 				
 				AutoDialogField objAnnotation = f.getAnnotation(com.testprojects.autodialog.annotations.AutoDialogField.class);
 				if (objAnnotation != null && !objAnnotation.skip())
 				{
-					hshProperties = getDialogProperties(f.getName(), f.getType(), objAnnotation);
-				}
-				else if (f.getAnnotation(javax.inject.Inject.class) != null)
-				{
-					if (!fieldAlreadyExistsOnDialog(f.getName()))
+					if (!AutoDialogField.NO_NAME.equals(objAnnotation.fieldName()))
 					{
-						hshProperties = getDialogProperties(f.getName(), f.getType());
+						strFieldName = objAnnotation.fieldName();
 					}
-				}
-				
-				//TODO: the node name should probably be an optional field on the annotation
-				if (objItemsRoot.getChild(f.getName()) == null)
-				{
-					objResolver.create(objItemsRoot, f.getName(), hshProperties);
+					else
+					{
+						strFieldName = f.getName();
+					}
+					
+					hshProperties = getDialogProperties(strFieldName, f.getType(), objAnnotation);
+					
+					if (objItemsRoot.getChild(strFieldName) == null)
+					{
+						objResolver.create(objItemsRoot, strFieldName, hshProperties);
+					}
 				}
 			}
 			
