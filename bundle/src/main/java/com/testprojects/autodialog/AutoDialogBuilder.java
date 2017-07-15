@@ -1,7 +1,9 @@
 package com.testprojects.autodialog;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.sling.api.resource.Resource;
@@ -33,7 +35,6 @@ public class AutoDialogBuilder {
 			for(Field f : objFields)
 			{
 				logger.debug("field: " + f.getName());
-				Map<String, Object> hshProperties = null;
 				String strFieldName = "";
 				
 				AutoDialogField objAnnotation = f.getAnnotation(com.testprojects.autodialog.annotations.AutoDialogField.class);
@@ -48,11 +49,16 @@ public class AutoDialogBuilder {
 						strFieldName = f.getName();
 					}
 					
-					hshProperties = getDialogProperties(strFieldName, f.getType(), objAnnotation);
-					
 					if (objItemsRoot.getChild(strFieldName) == null)
 					{
-						objResolver.create(objItemsRoot, strFieldName, hshProperties);
+						Map<String, Object> hshProperties = getDialogProperties(strFieldName, f.getType(), objAnnotation);
+						Resource objFieldResource = objResolver.create(objItemsRoot, strFieldName, hshProperties);
+						
+						putDialogFieldChildren(objFieldResource, objResolver, strFieldName, f.getType(), objAnnotation);
+					}
+					else
+					{
+						logger.warn("skipping auto-generated dialog fields on " + strFieldName + " because some are already defined");
 					}
 				}
 			}
@@ -63,6 +69,42 @@ public class AutoDialogBuilder {
 		{
 			logger.error(ex.getMessage(), ex);
 			return m_objResourceInput;
+		}
+	}
+	
+	private void putDialogFieldChildren(Resource objFieldResource, ResourceResolver objResolver, String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception
+	{
+		FieldType objFieldType;
+		
+		if (FieldType.IMPLICIT == objAnnotation.fieldResourceType())
+		{
+			objFieldType = getFieldType(objFieldClass);
+		}
+		else
+		{			
+			objFieldType = objAnnotation.fieldResourceType();
+		}
+		
+		switch(objFieldType)
+		{
+		case DROPDOWN:
+			putDropdownFieldChildren(objFieldResource, objResolver, strFieldName, objFieldClass, objAnnotation);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private void putDropdownFieldChildren(Resource objFieldResource, ResourceResolver objResolver, String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception
+	{
+		Resource objItems = objResolver.create(objFieldResource, "items", null);
+		
+		for (Object objEnumValue : objFieldClass.getEnumConstants())
+		{
+			Map<String, Object> hshProperties = new HashMap<String, Object>();
+			hshProperties.put("text", ((Enum) objEnumValue).name());
+			
+			Resource objItem = objResolver.create(objItems, ((Enum) objEnumValue).name(), hshProperties);
 		}
 	}
 	
@@ -81,7 +123,7 @@ public class AutoDialogBuilder {
 			hshPropertyMap.put("fieldLabel", objAnnotation.fieldLabel());
 		}
 		
-		if (AutoDialogField.NO_TYPE.equals(objAnnotation.fieldResourceType()))
+		if (FieldType.IMPLICIT == objAnnotation.fieldResourceType())
 		{
 			hshPropertyMap.put("sling:resourceType", getFieldResourceType(getFieldType(objFieldClass)));
 		}
@@ -131,6 +173,10 @@ public class AutoDialogBuilder {
 			return "granite/ui/components/foundation/form/textfield";
 		case PATH:
 			return "granite/ui/components/foundation/form/pathbrowser";
+		case DROPDOWN:
+			return "granite/ui/components/foundation/form/select";
+		case RADIO:
+			return "";
 		default:
 			throw new Exception("field type unknown");
 		}
@@ -138,9 +184,16 @@ public class AutoDialogBuilder {
 	
 	private FieldType getFieldType(Class objFieldClass)
 	{
+		logger.info("getting field type for: " + objFieldClass.getName());
+		
 		if (objFieldClass == java.lang.String.class)
 		{
 			return FieldType.TEXT;
+		}
+		
+		if (objFieldClass.isEnum())
+		{
+			return FieldType.DROPDOWN;
 		}
 		
 		return FieldType.TEXT;

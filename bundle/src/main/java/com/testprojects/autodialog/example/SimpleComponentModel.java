@@ -21,15 +21,17 @@ public class SimpleComponentModel {
     @AutoDialogField(skip=true)
     private String nonAuthoredField;
     
-    @Inject
-    @Optional
+    @Inject @Optional
     @AutoDialogField
     private String injectedText;
     
-    @Inject
-    @Optional
+    @Inject @Optional
     @AutoDialogField(fieldResourceType=FieldType.PATH)
     private String injectedPath;
+    
+    @Inject @Optional
+    @AutoDialogField
+    private DropdownValues injectedEnum;
     
     public String getAuthoredText(){ return authoredText; }
     
@@ -38,4 +40,6 @@ public class SimpleComponentModel {
     public String getInjectedText(){ return injectedText; }
     
     public String getInjectedPath(){ return injectedPath; }
+    
+    public DropdownValues getInjectedEnum(){ return injectedEnum; }
 }

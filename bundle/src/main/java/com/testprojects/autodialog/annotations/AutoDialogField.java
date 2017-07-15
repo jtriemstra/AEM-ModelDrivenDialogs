@@ -11,11 +11,10 @@ import com.testprojects.autodialog.FieldType;
 @Target(ElementType.FIELD)
 public @interface AutoDialogField {
 	static final String NO_LABEL = "";
-	static final String NO_TYPE = "";
 	static final String NO_NAME = "";
 	
 	boolean skip() default false;	
 	String fieldLabel() default NO_LABEL;
 	String fieldName() default NO_NAME;
-	FieldType fieldResourceType() default FieldType.TEXT;
+	FieldType fieldResourceType() default FieldType.IMPLICIT;
 }
