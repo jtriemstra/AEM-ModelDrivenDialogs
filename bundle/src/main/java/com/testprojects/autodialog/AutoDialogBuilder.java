@@ -111,28 +111,40 @@ public class AutoDialogBuilder {
 	private Map<String, Object> getDialogProperties(String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception
 	{
 		Map<String, Object> hshPropertyMap = new HashMap<String, Object>();
+		String strLabelPropertyName = "";
+		FieldType objFieldType;
 		
+		//TODO: make name and optional annotation property?
 		hshPropertyMap.put("name", "./" + strFieldName);
-		
-		if (AutoDialogField.NO_LABEL.equals(objAnnotation.fieldLabel()))
-		{
-			hshPropertyMap.put("fieldLabel", getFieldLabelByName(strFieldName));
-		}
-		else 
-		{
-			hshPropertyMap.put("fieldLabel", objAnnotation.fieldLabel());
-		}
 		
 		if (FieldType.IMPLICIT == objAnnotation.fieldResourceType())
 		{
-			hshPropertyMap.put("sling:resourceType", getFieldResourceType(getFieldType(objFieldClass)));
+			objFieldType = getFieldType(objFieldClass);
 		}
 		else
 		{			
-			hshPropertyMap.put("sling:resourceType", getFieldResourceType(objAnnotation.fieldResourceType()));
+			objFieldType = objAnnotation.fieldResourceType();
+		}
+		
+		hshPropertyMap.put("sling:resourceType", getFieldResourceType(objFieldType));
+		strLabelPropertyName = getLabelPropertyName(objFieldType);
+		
+		if (AutoDialogField.NO_LABEL.equals(objAnnotation.fieldLabel()))
+		{
+			hshPropertyMap.put(strLabelPropertyName, getFieldLabelByName(strFieldName));
+		}
+		else 
+		{
+			hshPropertyMap.put(strLabelPropertyName, objAnnotation.fieldLabel());
 		}
 		
 		return hshPropertyMap;
+	}
+	
+	private String getLabelPropertyName(FieldType objFieldType)
+	{
+		if (objFieldType == FieldType.CHECKBOX) return "text";
+		return "fieldLabel";
 	}
 		
 	private String getFieldLabelByName(String strFieldName)
@@ -155,8 +167,8 @@ public class AutoDialogBuilder {
 			return "granite/ui/components/foundation/form/pathbrowser";
 		case DROPDOWN:
 			return "granite/ui/components/foundation/form/select";
-		case RADIO:
-			return "";
+		case CHECKBOX:
+			return "granite/ui/components/foundation/form/checkbox";
 		default:
 			throw new Exception("field type unknown");
 		}
@@ -166,14 +178,14 @@ public class AutoDialogBuilder {
 	{
 		logger.info("getting field type for: " + objFieldClass.getName());
 		
-		if (objFieldClass == java.lang.String.class)
-		{
-			return FieldType.TEXT;
-		}
-		
 		if (objFieldClass.isEnum())
 		{
 			return FieldType.DROPDOWN;
+		}
+		
+		if (objFieldClass.equals(boolean.class))
+		{
+			return FieldType.CHECKBOX;
 		}
 		
 		return FieldType.TEXT;

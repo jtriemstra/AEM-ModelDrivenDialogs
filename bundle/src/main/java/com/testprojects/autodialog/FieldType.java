@@ -5,5 +5,6 @@ public enum FieldType {
 	TEXT,
 	PATH,
 	DROPDOWN,
-	RADIO
+	RADIO,
+	CHECKBOX
 }

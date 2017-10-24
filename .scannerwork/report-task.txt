@@ -1,0 +1,6 @@
+projectKey=aem-auto-dialog
+serverUrl=http://localhost:9000
+serverVersion=6.4.0.25310
+dashboardUrl=http://localhost:9000/dashboard/index/aem-auto-dialog
+ceTaskId=AV2Be--UTjGRGbE8jkM4
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AV2Be--UTjGRGbE8jkM4

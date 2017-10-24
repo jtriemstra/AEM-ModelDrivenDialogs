@@ -33,6 +33,10 @@ public class SimpleComponentModel {
     @AutoDialogField
     private DropdownValues injectedEnum;
     
+    @Inject @Optional
+    @AutoDialogField
+    private boolean injectedBool;
+    
     public String getAuthoredText(){ return authoredText; }
     
     public String getAuthoredPath(){ return authoredPath; }
@@ -42,4 +46,6 @@ public class SimpleComponentModel {
     public String getInjectedPath(){ return injectedPath; }
     
     public DropdownValues getInjectedEnum(){ return injectedEnum; }
+    
+    public boolean getInjectedBool() { return injectedBool; }
 }

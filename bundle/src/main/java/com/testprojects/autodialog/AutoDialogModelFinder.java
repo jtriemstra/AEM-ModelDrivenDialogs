@@ -27,13 +27,9 @@ public class AutoDialogModelFinder implements IModelFinder {
 	@Reference
 	private IDialogResourceMap m_objDialogResourceMap;
 	
-	//TODO: replace this with reflection on the @AutoDialog annotation
 	@Override
 	public Class getClass(Resource objResourceInput)
 	{
-		/*if ("/apps/auto-dialog/components/content/simpleComponent/cq:dialog".equals(strDialogPath)){
-			return com.testprojects.autodialog.example.SimpleComponentModel.class;
-		}*/
 		
 		logger.info("checking resource for: " + objResourceInput.getPath());
 		
@@ -47,7 +43,14 @@ public class AutoDialogModelFinder implements IModelFinder {
 			logger.info("resource was found: " + strResource);
 			ResourceResolver objResolver = objResourceInput.getResourceResolver();
 			Resource objContent = objResolver.getResource(strResource);
-			objReturn = modelFactory.getModelFromResource(objContent);
+			try
+			{
+				objReturn = modelFactory.getModelFromResource(objContent);
+			}
+			catch (org.apache.sling.models.factory.ModelClassException e)
+			{
+				logger.info("couldn't create model class for " + strResource, e);
+			}
 		}
 				
 		if (objReturn != null)
