@@ -1,18 +1,13 @@
 package com.testprojects.autodialog;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.testprojects.autodialog.annotations.AutoDialogField;
+import com.testprojects.autodialog.example.*;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.models.factory.ModelFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,17 +17,32 @@ public class AutoDialogModelFinder implements IModelFinder {
 	private Logger logger = LoggerFactory.getLogger(AutoDialogModelFinder.class);
 	
 	@Reference
-	private ModelFactory modelFactory;
-	
-	@Reference
 	private IDialogResourceMap m_objDialogResourceMap;
 	
 	@Override
 	public Class getClass(Resource objResourceInput)
 	{
-		
 		logger.info("checking resource for: " + objResourceInput.getPath());
 		
+		return getClassByDialogAttribute(objResourceInput);
+	}
+	
+	private Class getClassByDialogAttribute(Resource objResourceInput)
+	{
+		ValueMap objValues = objResourceInput.adaptTo(ValueMap.class);
+		String strClassName = objValues.get("autoDialogModelClass", String.class);
+		try
+		{
+			return Class.forName(strClassName);
+		}
+		catch (ClassNotFoundException e)
+		{
+			return null;
+		}
+	}
+	
+	private Class getClassByModelFactory(Resource objResourceInput)
+	{
 		//TODO: this is not an elegant solution
 		String strResource = m_objDialogResourceMap.getResource(objResourceInput.getPath());
 		
@@ -45,9 +55,10 @@ public class AutoDialogModelFinder implements IModelFinder {
 			Resource objContent = objResolver.getResource(strResource);
 			try
 			{
-				objReturn = modelFactory.getModelFromResource(objContent);
+				//TODO: revert this to modelFactory for AEM 6.2+
+				objReturn = objContent.adaptTo(CompositeComponentModel.class);
 			}
-			catch (org.apache.sling.models.factory.ModelClassException e)
+			catch (Exception e)
 			{
 				logger.info("couldn't create model class for " + strResource, e);
 			}
@@ -62,7 +73,6 @@ public class AutoDialogModelFinder implements IModelFinder {
 		{
 			logger.error("modelFactory could not create model");
 			return null;
-		}
+		}	
 	}
-	
 }

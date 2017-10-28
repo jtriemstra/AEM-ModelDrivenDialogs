@@ -25,13 +25,13 @@
             <artifactId>auto-dialog-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>com.adobe.acs</groupId>
-			<artifactId>acs-aem-commons-content</artifactId>
-			<version>3.7.0</version>
-			<type>content-package</type>
-			<classifier>min</classifier>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.adobe.acs</groupId> -->
+<!-- 			<artifactId>acs-aem-commons-content</artifactId> -->
+<!-- 			<version>3.7.0</version> -->
+<!-- 			<type>content-package</type> -->
+<!-- 			<classifier>min</classifier> -->
+<!-- 		</dependency> -->
     </dependencies>
     <build>
         <resources>

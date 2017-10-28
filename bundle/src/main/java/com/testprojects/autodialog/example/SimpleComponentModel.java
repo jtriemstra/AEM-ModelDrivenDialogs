@@ -9,7 +9,7 @@ import org.apache.sling.models.annotations.Optional;
 import com.testprojects.autodialog.FieldType;
 import com.testprojects.autodialog.annotations.*;
 
-@Model(adaptables = Resource.class, resourceType="auto-dialog/components/content/simpleComponent")
+@Model(adaptables = Resource.class)
 public class SimpleComponentModel {
 
 	@Inject	

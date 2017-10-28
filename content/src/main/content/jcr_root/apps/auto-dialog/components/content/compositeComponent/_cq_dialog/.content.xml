@@ -3,7 +3,7 @@
     jcr:primaryType="nt:unstructured"
     jcr:title="Promo"
     sling:resourceType="cq/gui/components/authoring/dialog"
-    autoDialogModelClass="com.testprojects.autodialog.example.SimpleComponentModel">
+    autoDialogModelClass="com.testprojects.autodialog.example.CompositeComponentModel">
     <content
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/foundation/container">
@@ -24,17 +24,39 @@
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/foundation/container">
                         <items jcr:primaryType="nt:unstructured">
-                            <authoredText
+                            <!-- <link1
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                <items jcr:primaryType="nt:unstructured">
+		                            <authoredText
+		                                jcr:primaryType="nt:unstructured"
+		                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+		                                fieldLabel="Link Text"
+		                                name="./link1/linkText"/>
+									<authoredPath
+		                                jcr:primaryType="nt:unstructured"
+		                                sling:resourceType="granite/ui/components/foundation/form/pathbrowser"
+		                                fieldLabel="Authored Path"
+		                                name="./link1/linkPath"/>    
+                                </items>
+                            </link1>
+                            
+                            <authoredText1
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/foundation/form/textfield"
-                                fieldLabel="Authored Text"
-                                name="./authoredText"/>
-							<authoredPath
+                                fieldLabel="Link Text"
+                                name="./link2/linkText"/>
+							<authoredPath1
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/foundation/form/pathbrowser"
                                 fieldLabel="Authored Path"
-                                name="./authoredPath"/>
-                            
+                                name="./link2/linkPath"/>
+							<header
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                fieldLabel="Header Text"
+                                name="./headerText"/>
+                                -->
                         </items>
                     </columns>
                 </items>

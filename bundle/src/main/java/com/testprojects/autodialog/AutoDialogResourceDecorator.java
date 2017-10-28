@@ -65,7 +65,9 @@ public class AutoDialogResourceDecorator implements ResourceDecorator {
 		// Joel is finding this appears to be true of objResourceInput.isResourceType() as well
 		if (TOUCH_DIALOG_TYPE.equals(objResourceInput.getResourceType()))
 		{
-			return true;
+			ValueMap objValues = objResourceInput.adaptTo(ValueMap.class);
+			String strClassName = objValues.get("autoDialogModelClass", String.class);
+			if (strClassName != null) return true;
 		}
 		return false;
 	

@@ -17,24 +17,35 @@ public class AutoDialogBuilder {
 	private Logger logger = LoggerFactory.getLogger(AutoDialogBuilder.class);
 	private Class m_objComponentModelClass;
 	private Resource m_objResourceInput;
+	private String m_strPathContext;
 	
 	public AutoDialogBuilder(Class objComponentModelClass, Resource objResourceInput)
 	{
 		m_objComponentModelClass = objComponentModelClass;
 		m_objResourceInput = objResourceInput;
+		m_strPathContext = "";
+	}
+	
+	public AutoDialogBuilder(Class objComponentModelClass, Resource objResourceInput, String strPathContext)
+	{
+		m_objComponentModelClass = objComponentModelClass;
+		m_objResourceInput = objResourceInput;
+		m_strPathContext = strPathContext;
 	}
 	
 	public Resource addDynamicFields()
 	{
 		ResourceResolver objResolver = m_objResourceInput.getResourceResolver();
 		//TODO: this needs to handle dialogs that don't exist at all, and also situations where we don't want to mess with tab1
-		Resource objItemsRoot = m_objResourceInput.getChild("content/items/tab1/items/columns/items");
+		Resource objItemsRoot = findCurrentRoot();
+		logger.info("current root is " + objItemsRoot.getPath());
+		
 		
 		try{
 			Field[] objFields = m_objComponentModelClass.getDeclaredFields();
 			for(Field f : objFields)
 			{
-				logger.debug("field: " + f.getName());
+				logger.info("field: " + f.getName());
 				String strFieldName = "";
 				
 				AutoDialogField objAnnotation = f.getAnnotation(com.testprojects.autodialog.annotations.AutoDialogField.class);
@@ -52,6 +63,7 @@ public class AutoDialogBuilder {
 					if (objItemsRoot.getChild(strFieldName) == null)
 					{
 						Map<String, Object> hshProperties = getDialogProperties(strFieldName, f.getType(), objAnnotation);
+						logger.info("creating " + strFieldName + " at " + objItemsRoot.getPath());
 						Resource objFieldResource = objResolver.create(objItemsRoot, strFieldName, hshProperties);
 						
 						putDialogFieldChildren(objFieldResource, objResolver, strFieldName, f.getType(), objAnnotation);
@@ -72,6 +84,14 @@ public class AutoDialogBuilder {
 		}
 	}
 	
+	private Resource findCurrentRoot()
+	{
+		//TODO: the semantics of the "else" aren't quite right - "if there's a path context, ignore it and use the current resource"
+		//TODO: this tightly couples the name attributes with the data structure
+		if ("".equals(m_strPathContext)) return m_objResourceInput.getChild("content/items/tab1/items/columns/items");
+		else return m_objResourceInput;
+	}
+	
 	private void putDialogFieldChildren(Resource objFieldResource, ResourceResolver objResolver, String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception
 	{
 		FieldType objFieldType;
@@ -87,12 +107,24 @@ public class AutoDialogBuilder {
 		
 		switch(objFieldType)
 		{
+		case CONTAINER:
+			putContainerChildren(objFieldResource, objResolver, strFieldName, objFieldClass, objAnnotation);
+			break;
 		case DROPDOWN:
 			putDropdownFieldChildren(objFieldResource, objResolver, strFieldName, objFieldClass, objAnnotation);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	private void putContainerChildren(Resource objFieldResource, ResourceResolver objResolver, String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception 
+	{
+		logger.info("adding container children for " + strFieldName);
+		logger.info("class is " + objFieldClass.getCanonicalName());
+		Resource objItemsResource = objResolver.create(objFieldResource, "items", null);
+		AutoDialogBuilder objChildBuilder = new AutoDialogBuilder(objFieldClass, objItemsResource, strFieldName + "/");
+		objChildBuilder.addDynamicFields();
 	}
 	
 	private void putDropdownFieldChildren(Resource objFieldResource, ResourceResolver objResolver, String strFieldName, Class objFieldClass, AutoDialogField objAnnotation) throws Exception
@@ -114,9 +146,6 @@ public class AutoDialogBuilder {
 		String strLabelPropertyName = "";
 		FieldType objFieldType;
 		
-		//TODO: make name and optional annotation property?
-		hshPropertyMap.put("name", "./" + strFieldName);
-		
 		if (FieldType.IMPLICIT == objAnnotation.fieldResourceType())
 		{
 			objFieldType = getFieldType(objFieldClass);
@@ -127,16 +156,9 @@ public class AutoDialogBuilder {
 		}
 		
 		hshPropertyMap.put("sling:resourceType", getFieldResourceType(objFieldType));
-		strLabelPropertyName = getLabelPropertyName(objFieldType);
-		
-		if (AutoDialogField.NO_LABEL.equals(objAnnotation.fieldLabel()))
-		{
-			hshPropertyMap.put(strLabelPropertyName, getFieldLabelByName(strFieldName));
-		}
-		else 
-		{
-			hshPropertyMap.put(strLabelPropertyName, objAnnotation.fieldLabel());
-		}
+		hshPropertyMap.put(getLabelPropertyName(objFieldType), getFieldLabel(objAnnotation, strFieldName));
+		//TODO: make name an optional annotation property?
+		hshPropertyMap.put("name", "./" + m_strPathContext + strFieldName);
 		
 		return hshPropertyMap;
 	}
@@ -145,6 +167,18 @@ public class AutoDialogBuilder {
 	{
 		if (objFieldType == FieldType.CHECKBOX) return "text";
 		return "fieldLabel";
+	}
+	
+	private String getFieldLabel(AutoDialogField objFieldAnnotation, String strFieldName)
+	{
+		if (AutoDialogField.NO_LABEL.equals(objFieldAnnotation.fieldLabel()))
+		{
+			return getFieldLabelByName(strFieldName);
+		}
+		else 
+		{
+			return objFieldAnnotation.fieldLabel();
+		}
 	}
 		
 	private String getFieldLabelByName(String strFieldName)
@@ -169,6 +203,8 @@ public class AutoDialogBuilder {
 			return "granite/ui/components/foundation/form/select";
 		case CHECKBOX:
 			return "granite/ui/components/foundation/form/checkbox";
+		case CONTAINER:
+			return "granite/ui/components/foundation/form/fieldset";
 		default:
 			throw new Exception("field type unknown");
 		}

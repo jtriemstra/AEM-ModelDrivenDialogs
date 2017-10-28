@@ -17,6 +17,10 @@
 				sling:resourceType="auto-dialog/components/content/simpleComponent"
 				authoredText="this is default authored text"
 				authoredPath="/content/test-auto-dialog" />
+			<composite1
+				jcr:primaryType="nt:unstructured"
+				sling:resourceType="auto-dialog/components/content/compositeComponent"
+				 />
 		</par>
     </jcr:content>
     

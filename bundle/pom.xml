@@ -60,14 +60,14 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.api</artifactId>
         </dependency>
-        <dependency>
-			<groupId>com.adobe.acs</groupId>
-			<artifactId>acs-aem-commons-bundle</artifactId>
-			<version>2.10.0</version>
-			<scope>provided</scope>
-		</dependency>
+<!--         <dependency> -->
+<!-- 			<groupId>com.adobe.acs</groupId> -->
+<!-- 			<artifactId>acs-aem-commons-bundle</artifactId> -->
+<!-- 			<version>2.10.0</version> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
 		<dependency> <groupId>org.apache.sling</groupId> <artifactId>org.apache.sling.models.api</artifactId></dependency>
-        <dependency> <groupId>org.apache.geronimo.specs</groupId> <artifactId>geronimo-atinject_1.0_spec</artifactId></dependency>
+<!--         <dependency> <groupId>org.apache.geronimo.specs</groupId> <artifactId>geronimo-atinject_1.0_spec</artifactId></dependency> -->
         
     </dependencies>
 
